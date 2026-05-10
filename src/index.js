@@ -567,14 +567,14 @@ _resolveHost(callback) {
     return callback(this.apiIP);
   }
 
-  // Modern promise API + force IPv4 (fixes lint error + safe for older Daikin devices)
-  dns.promises.lookup(this.apiIP, { family: 4 })
-    .then(({ address }) => {
+  // Modern promise API + force IPv4 (fixes lint + safe for older Daikin devices)
+  dns.promises.lookup(this.apiIP, {family:4})
+    .then(({address}) => {
       this.log.debug('Resolved %s to %s', this.apiIP, address);
       callback(address);
     })
-    .catch((err) => {
-      this.log.warn('DNS lookup failed for %s: %s, using hostname as-is', this.apiIP, err.message);
+    .catch((error) => {
+      this.log.warn('DNS lookup failed for %s: %s, using hostname as-is', this.apiIP, error.message);
       callback(this.apiIP);
     });
 },
