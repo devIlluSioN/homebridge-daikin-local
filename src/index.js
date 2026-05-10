@@ -568,7 +568,7 @@ _resolveHost(callback) {
   }
 
   // Modern promise API + force IPv4 (fixes lint + safe for older Daikin devices)
-  dns.promises.lookup(this.apiIP, { family:4 })
+  dns.promises.lookup(this.apiIP, {family: 4})
     .then(({address}) => {
       this.log.debug('Resolved %s to %s', this.apiIP, address);
       callback(address);
