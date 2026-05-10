@@ -562,21 +562,22 @@ Daikin.prototype = {
     return true;
   },
 
-  _resolveHost(callback) {
-    if (net.isIP(this.apiIP)) {
-      return callback(this.apiIP);
-    }
+_resolveHost(callback) {
+  if (net.isIP(this.apiIP)) {
+    return callback(this.apiIP);
+  }
 
-    dns.lookup(this.apiIP, (err, address) => {
-      if (err) {
-        this.log.warn('DNS lookup failed for %s: %s, using hostname as-is', this.apiIP, err.message);
-        return callback(this.apiIP);
-      }
-
+  // Modern promise API + force IPv4 (fixes lint error + safe for older Daikin devices)
+  dns.promises.lookup(this.apiIP, { family: 4 })
+    .then(({ address }) => {
       this.log.debug('Resolved %s to %s', this.apiIP, address);
-      return callback(address);
+      callback(address);
+    })
+    .catch((err) => {
+      this.log.warn('DNS lookup failed for %s: %s, using hostname as-is', this.apiIP, err.message);
+      callback(this.apiIP);
     });
-  },
+},
 
   _replaceHostInUrl(url, resolvedIP) {
     try {
